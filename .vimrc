@@ -46,9 +46,10 @@ let g:airline#extensions#whitespace#enabled = 0
 Plugin 'tpope/vim-fugitive'
 
 
-"Plugin 'Lokaltog/vim-powerline'
-"let g:Powline_symbols='fancy'
-
+"Plugin 'altercation/vim-colors-solarized'
+"syntax enable
+"set background=dark
+"colorscheme solarized
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -103,24 +104,11 @@ set fileencodings=utf-8,gbk
 " 实用功能    
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""    
 "--------引号 && 括号自动匹配    
-:inoremap ( ()<ESC>i    
-:inoremap ) <c-r>=ClosePair(')')<CR>    
-:inoremap { {}<ESC>i    
-:inoremap } <c-r>=ClosePair('}')<CR>    
-:inoremap [ []<ESC>i    
-:inoremap ] <c-r>=ClosePair(']')<CR>    
-":inoremap < <><ESC>i    
-":inoremap > <c-r>=ClosePair('>')<CR>    
-:inoremap " ""<ESC>i    
-:inoremap ' ''<ESC>i    
-:inoremap ` ``<ESC>i    
-function ClosePair(char)    
-    if getline('.')[col('.') - 1] == a:char    
-        return "\<Right>"    
-    else    
-        return a:char    
-    endif    
-endf    
+inoremap ( ()<ESC>i
+inoremap { {}<ESC>i
+inoremap [ []<ESC>i
+inoremap < <><ESC>i
+inoremap ' ''<ESC>i
 "--------启用代码折叠，用空格键来开关折叠     
 set foldenable           " 打开代码折叠    
 set foldmethod=syntax        " 选择代码折叠类型    
