@@ -1,0 +1,278 @@
+set nocompatible
+filetype off
+set encoding=utf-8
+set fileencoding=utf-8
+set termencoding=utf-8
+set fileencodings=utf-8,gb2312,gbk,latin1
+
+call plug#begin('~/.vim/plugged')
+
+let mapleader="g"
+
+Plug 'ludovicchabant/vim-gutentags'
+set rtp+=~/.vim/plugged/vim-gutentags
+" gutentags搜索工程目录的标志，碰到这些文件/目录名就停止向上一级目录递归 "
+let g:gutentags_project_root = ['.root', '.svn', '.git', '.project', '.hg']
+" 所生成的数据文件的名称 "
+let g:gutentags_ctags_tagfile = '.tags'
+" 同时开启 ctags 和 gtags 支持：
+let g:gutentags_modules = []
+if executable('ctags')
+    let g:gutentags_modules += ['ctags']
+endif
+if executable('gtags-cscope') && executable('gtags')
+    let g:gutentags_modules += ['gtags_cscope']
+endif
+" 将自动生成的 tags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录 "
+let s:vim_tags = expand('~/.cache/tags')
+let g:gutentags_cache_dir = s:vim_tags
+" 检测 ~/.cache/tags 不存在就新建 "
+if !isdirectory(s:vim_tags)
+    silent! call mkdir(s:vim_tags, 'p')
+endif
+" 配置 ctags 的参数 "
+let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+let g:gutentags_ctags_extra_args += ['--c++-kinds=+pxI']
+let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+let g:gutentags_ctags_extra_args += ['--output-format=e-ctags']
+
+Plug 'skywind3000/vim-quickui'
+set rtp+=~/.vim/plugged/vim-quickui
+noremap <silent><F12> :call quickui#menu#open()<cr>
+call quickui#menu#reset()
+let g:quickui_show_tip = 1
+call quickui#menu#install('&Views', [
+            \ [ "&File List\t<F2>", ':NERDTreeToggle' ],
+            \ [ "&File List1\t<F2>", 'echo 1' ],
+            \ ])
+call quickui#menu#install('&Files', [
+            \ [ "&File List\t<F2>", ':NERDTreeToggle' ],
+            \ [ "&File List1\t<F2>", 'echo 1' ],
+            \ ])
+
+
+Plug 'preservim/nerdtree'
+set rtp+=~/.vim/plugged/nerdtree
+noremap <silent><F2> :NERDTreeToggle<CR>
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+let g:NERDTreeShowHidden = 1
+let g:NERDTreeChDirMode = 2
+
+Plug 'majutsushi/tagbar'
+set rtp+=~/.vim/plugged/tagbar
+noremap <silent><F3> :TagbarToggle<CR>
+let g:tagbar_autofocus = 1
+let g:tagbar_sort = 0
+let g:tagbar_autoclose = 1
+let g:tagbar_compact = 1
+
+Plug 'vim-airline/vim-airline'
+set rtp+=~/.vim/plugged/vim-airline
+let g:laststatus = 2
+let g:airline_powerline_fonts = 1
+let g:Powerline_symbols='fancy'
+let g:airline#extensions#tabline#enabled = 1
+"let g:airline#extensions#tabline#buffer_nr_show = 1
+"let g:airline_section_b = airline#section#create(['branch'])
+"let g:airline_section_c = airline#section#create(['%F'])
+let g:airline_section_z = airline#section#create(['readonly', 'linenr', 'maxlinenr', '%p%%'])
+let g:airline#extensions#hunks#enabled = 1
+let g:airline#extensions#branch#enabled=1
+let g:airline#extensions#gutentags#enabled = 1
+let g:airline#extensions#ale#enabled = 1
+set hidden
+let g:airline#extensions#tabline#buffer_idx_mode = 1
+noremap <leader>n :bn<CR>
+noremap <leader>p :bp<CR>
+noremap <Leader>0 :bd<CR>
+nmap <Leader>1 <Plug>AirlineSelectTab1
+nmap <Leader>2 <Plug>AirlineSelectTab2
+nmap <Leader>3 <Plug>AirlineSelectTab3
+nmap <Leader>4 <Plug>AirlineSelectTab4
+nmap <Leader>5 <Plug>AirlineSelectTab5
+nmap <Leader>6 <Plug>AirlineSelectTab6
+nmap <Leader>7 <Plug>AirlineSelectTab7
+nmap <Leader>8 <Plug>AirlineSelectTab8
+nmap <Leader>9 <Plug>AirlineSelectTab9
+
+Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
+set rtp+=~/.vim/plugged/LeaderF
+let g:Lf_ShortcutF = '<C-P>'
+let g:Lf_HideHelp = 1
+let g:Lf_UseCache = 0
+let g:Lf_UseVersionControlTool = 0
+let g:Lf_IgnoreCurrentBufferName = 1
+let g:Lf_StlSeparator = { 'left': '', 'right': '' }
+"noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
+noremap <c-n> :LeaderfMru<CR>
+noremap <leader>f :LeaderfFileCword<cr>
+noremap <leader>c :LeaderfFunctionCword<cr>
+noremap <leader>ac :LeaderfFunctionAllCword<cr>
+noremap <leader>t :LeaderfTagCword<CR>
+noremap <leader>l :LeaderfLine<CR>
+
+"mru : most recently used file
+"Plug 'lvht/mru'
+"set rtp+=~/.vim/plugged/mru
+
+
+Plug 'godlygeek/tabular'
+set rtp+=~/.vim/plugged/tabular
+Plug 'plasticboy/vim-markdown'
+set rtp+=~/.vim/plugged/vim-markdown
+let g:vim_markdown_folding_disabled = 1
+
+Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --clangd-completer' }
+set rtp+=~/.vim/plugged/YouCompleteMe
+let g:ycm_show_diagnostics_ui = 0
+" 补全功能在注释中同样有效
+let g:ycm_complete_in_comments=1
+" 不弹出函数原型预览
+set completeopt=menu,menuone
+let g:ycm_add_preview_to_completeopt = 0
+" 禁止缓存匹配项，每次都重新生成匹配项
+let g:ycm_cache_omnifunc=0
+" 语法关键字补全
+let g:ycm_seed_identifiers_with_syntax=1
+Plug 'rdnetto/YCM-Generator', { 'branch': 'stable'}
+set rtp+=~/.vim/plugged/YCM-Generator
+
+Plug 'Chiel92/vim-autoformat'
+set rtp+=~/.vim/plugged/vim-autoformat
+noremap <F4> :Autoformat<CR>
+let g:autoformat_verbosemode=1
+
+"Plug 'brookhong/cscope.vim'
+"set rtp+=~/.vim/plugged/cscope
+"nnoremap <F11> :call CscopeFindInteractive(expand('<cword>'))<CR>
+"nnoremap <leader>l :call ToggleLocationList()<CR>
+
+"Plug 'haolongzhangm/auto_update_cscope_ctags_database'
+"set rtp+=~/.vim/plugged/auto_update_cscope_ctags_database
+
+Plug 'kana/vim-textobj-user'
+set rtp+=~/.vim/plugged/vim-textobj-user
+Plug 'sgur/vim-textobj-parameter'
+set rtp+=~/.vim/plugged/vim-textobj-parameter
+
+"Plug 'tpope/vim-fugitive'
+"set rtp+=~/.vim/plugged/vim-fugitive
+"
+Plug 'mhinz/vim-signify'
+set rtp+=~/.vim/plugged/vim-signify
+
+Plug 'dense-analysis/ale'
+set rtp+=~/.vim/plugged/ale
+"let g:ale_linters_explicit = 1
+"let g:ale_completion_delay = 500
+"let g:ale_echo_delay = 20
+"let g:ale_lint_delay = 500
+let g:ale_echo_msg_error_str = 'E'
+let g:ale_echo_msg_warning_str = 'W'
+let g:ale_echo_msg_format = '[%linter%] %code: %%s'
+"let g:ale_lint_on_text_changed = 'normal'
+"let g:ale_lint_on_insert_leave = 1
+"let g:airline#extensions#ale#enabled = 1
+"let g:ale_c_gcc_options = '-Wall -O2 -std=c99'
+"let g:ale_cpp_gcc_options = '-Wall -O2 -std=c++14'
+"let g:ale_c_cppcheck_options = ''
+"let g:ale_cpp_cppcheck_options = ''
+
+"Plug 'morhetz/gruvbox'
+"set rtp+=~/.vim/plugged/gruvbox
+"colorscheme gruvbox
+Plug 'rakr/vim-one'
+set rtp+=~/.vim/plugged/vim-one
+colorscheme one
+set background=light
+
+Plug 'Raimondi/delimitMate'
+set rtp+=~/.vim/plugged/delimitMate
+
+call plug#end()
+filetype plugin indent on
+
+map <silent><F5> <ESC><ESC>:w<CR>:source ~/.vimrc<CR><ESC>
+
+
+set number
+set t_Co=256
+set autoread
+set shortmess=atI
+set encoding=utf-8
+set langmenu=zh_CN.UTF-8
+set smartcase
+set showcmd
+set scrolloff=3
+set mouse=c
+set cursorline
+set cursorcolumn
+highlight CursorLine cterm=None ctermbg=253 ctermfg=NONE guibg=NONE guifg=NONE
+
+set hlsearch
+set incsearch
+set ignorecase
+
+set tabstop=4
+set shiftwidth=4
+set expandtab
+
+
+" tags
+"set tags=./tags;,tags
+
+" cscope
+if has("gtags-cscope")
+   " 使支持用 Ctrl+]  和 Ctrl+t 快捷键在代码间跳来跳去
+   set cscopetag
+   " 使用 gtags-cscope 代替 cscope
+   set cscopeprg='gtags-cscope'
+   " check cscope for definition of a symbol before checking ctags:
+   " set to 1 if you want the reverse search order.
+    set csto=0
+
+    " add any cscope database in current directory
+    if filereadable("cscope.out")
+        cs add cscope.out
+    " else add the database pointed to by environment variable
+    elseif $CSCOPE_DB !=""
+        cs add $CSCOPE_DB
+    endif
+
+    " show msg when any other cscope db added
+    set cscopeverbose
+
+    "gtags.vim 设置项
+    let GtagsCscope_Auto_Load = 1
+    let CtagsCscope_Auto_Map = 1
+    let GtagsCscope_Quiet = 1
+
+endif
+nmap <C-h>a :cs find a <C-R>=expand("<cword>")<CR><CR>
+" 哪些函数调用了这个函数？
+nmap <C-h>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+" 这个函数调用了哪些函数？
+nmap <C-h>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+" 这个字符串egrep模式在哪儿有
+nmap <C-h>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+" 查找文件
+nmap <C-h>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+" 这是在什么地方定义的？
+nmap <C-h>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+" 查找包含该文件的文件
+nmap <C-h>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
+" 什么地方用到了这个符号？
+nmap <C-h>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+" 这个字符串在哪儿有
+nmap <C-h>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+
+" windows move
+nnoremap <Leader>wh :vertical resize -1<CR>
+nnoremap <Leader>wl :vertical resize +1<CR>
+nnoremap <Leader>wk :resize +1<CR>
+nnoremap <Leader>wj :resize -1<CR>
+nnoremap <Leader>w= <c-w>=
+
+set list
+set listchars=tab:\¦\ ,trail:~,extends:>,precedes:<
+
